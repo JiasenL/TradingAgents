@@ -176,7 +176,7 @@ def create_layout():
         Layout(name="footer", size=3),
     )
     layout["main"].split_column(
-        Layout(name="upper", ratio=3), Layout(name="analysis", ratio=5)
+        Layout(name="upper", ratio=5), Layout(name="analysis", ratio=5)
     )
     layout["upper"].split_row(
         Layout(name="progress", ratio=2), Layout(name="messages", ratio=3)
@@ -202,13 +202,13 @@ def update_display(layout, spinner_text=None):
         show_header=True,
         header_style="bold magenta",
         show_footer=False,
-        box=box.SIMPLE_HEAD,  # Use simple header with horizontal lines
+        box=box.MINIMAL,  # Use simple header with horizontal lines
         title=None,  # Remove the redundant Progress title
-        padding=(0, 2),  # Add horizontal padding
+        padding=(0, 1),  # Add horizontal padding
         expand=True,  # Make table expand to fill available space
     )
     progress_table.add_column("Team", style="cyan", justify="center", width=20)
-    progress_table.add_column("Agent", style="green", justify="center", width=20)
+    progress_table.add_column("Agent", style="green", justify="center", width=20,overflow="fold",no_wrap=False)
     progress_table.add_column("Status", style="yellow", justify="center", width=20)
 
     # Group agents by team
@@ -996,7 +996,20 @@ def run_analysis():
 
         # Display the complete final report
         display_complete_report(final_state)
-
+        with open("trading_report.txt", "a") as f:
+            f.write(f"=== {final_state['company_of_interest']} - {final_state['trade_date']} ===\n")
+            f.write(f"Final Decision: {decision}\n")
+            f.write("\n"+"#" * 50 + "\n\n")
+            f.write(f"Trader Plan: \n{final_state['trader_investment_plan']}\n")
+            f.write("\n"+"#" * 50 + "\n\n")
+            f.write(f"Market Report: \n{final_state['market_report']}\n")
+            f.write("\n"+"#" * 50 + "\n\n")
+            f.write(f"News Report: \n{final_state['news_report']}\n")
+            f.write("\n"+"#" * 50 + "\n\n")
+            f.write(f"Sentiment Report: \n{final_state['sentiment_report']}\n")
+            f.write("\n"+"#" * 50 + "\n\n")
+            f.write(f"Fundamentals Report: \n{final_state['fundamentals_report']}\n")
+            f.write("=" * 50 + "\n\n")
         update_display(layout)
 
 
