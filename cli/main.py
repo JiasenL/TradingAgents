@@ -23,8 +23,6 @@ from tradingagents.default_config import DEFAULT_CONFIG
 from cli.models import AnalystType
 from cli.utils import *
 
-
-
 console = Console()
 
 app = typer.Typer(
@@ -999,48 +997,18 @@ def run_analysis():
         # Display the complete final report
         display_complete_report(final_state)
 
-
-        filepath = make_report_filepath(final_state["company_of_interest"])
+        ### Report_Utils
+        filepath = make_report_filepath(
+            final_state["company_of_interest"],
+            decision  # e.g. "BUY" or "SELL"
+        )
         capture_clean_report(final_state, decision, filepath=filepath)
 
-        with open(filepath, "a") as f:
-            f.write("=" * 50 + "\n\n\n\n\n")
-            f.write(f"=== {final_state['company_of_interest']} - {final_state['trade_date']} ===\n")
-            f.write(f"Final Decision: {decision}\n")
-            f.write("\n"+"#" * 50 + "\n\n")
-            f.write(f"Trader Plan: \n{final_state['trader_investment_plan']}\n")
-            f.write("\n"+"#" * 50 + "\n\n")
-            f.write(f"Market Report: \n{final_state['market_report']}\n")
-            f.write("\n"+"#" * 50 + "\n\n")
-            f.write(f"News Report: \n{final_state['news_report']}\n")
-            f.write("\n"+"#" * 50 + "\n\n")
-            f.write(f"Sentiment Report: \n{final_state['sentiment_report']}\n")
-            f.write("\n"+"#" * 50 + "\n\n")
-            f.write(f"Fundamentals Report: \n{final_state['fundamentals_report']}\n")
-            f.write("=" * 50 + "\n\n")
-        
         update_display(layout)
 
 ##############################################################################
 from io import StringIO
 from contextlib import redirect_stdout
-
-def capture_and_save_report(final_state, decision, filepath="trading_report.txt", width=100):
-    # Render using your display logic into a buffer
-    buf = StringIO()
-    # console = Console(file=buf, width=width, force_terminal=True)
-    with redirect_stdout(buf):
-        display_complete_report(final_state)
-
-    rendered = buf.getvalue()
-
-    # Append the debate sections (in case display_complete_report doesn’t include them)
-    rendered += "\n" + format_full_report(final_state, decision)
-
-    with open(filepath, "a") as f:
-        f.write(f"######### DEBATE CONTENT ############# \n\n")
-        f.write(rendered)
-        f.write("\n")
 
 def capture_clean_report(final_state, decision, filepath, width=100):
     buf = StringIO()
@@ -1057,16 +1025,14 @@ def capture_clean_report(final_state, decision, filepath, width=100):
     with redirect_stdout(buf):
         display_complete_report(final_state)
 
-    rendered = buf.getvalue()
-    rendered += "\n\n\n\n\n\n ######### Full Format Report ############# \n" + format_full_report(final_state, decision)
-    
-    # 3) Combine and strip ANSI
+    rendered = format_full_report(final_state, decision)
+    rendered += "\n\n\n\n\n\n ######### DEBATE CONTENT ############# \n\n" + buf.getvalue()
+
     full = rendered
     clean = strip_ansi(full)
 
     # Write it out
     with open(filepath, "a") as f:
-        f.write(f"######### DEBATE CONTENT ############# \n\n")
         f.write(clean)
         f.write("\n")
 
@@ -1126,15 +1092,26 @@ def normalize_entries(entries):
     return [line for line in entries.splitlines() if line.strip()]
 
 
-
-def make_report_filepath(ticker, base_dir="reports"):
+def make_report_filepath(ticker: str,
+                         decision: str,
+                         base_dir: str = "reports") -> str:
     from datetime import datetime
     import os
-    
+
+    # Ensure the directory exists
     os.makedirs(base_dir, exist_ok=True)
+
+    # Timestamp
     ts = datetime.now().strftime("%Y%m%d_%H%M%S")
-    safe = "".join(c for c in ticker if c.isalnum())
-    return os.path.join(base_dir, f"{ts}_{safe}.txt")
+
+    # Sanitize ticker and decision
+    safe_ticker = "".join(c for c in ticker if c.isalnum())
+    safe_decision = "".join(c for c in decision if c.isalnum()).upper()
+
+    # Build filename: e.g. 20250617_143205_MSFT_BUY.txt
+    filename = f"{ts}_{safe_ticker}_{safe_decision}.txt"
+    return os.path.join(base_dir, filename)
+
 
 ##############################################################################
 

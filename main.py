@@ -18,12 +18,12 @@ print(decision)
 # Memorize mistakes and reflect
 # ta.reflect_and_remember(1000) # parameter is the position returns
 # Save to file
-with open("trading_report.txt", "a") as f:
-    f.write(f"=== {final_state['company_of_interest']} - {final_state['trade_date']} ===\n")
-    f.write(f"Final Decision: {decision}\n")
-    f.write(f"Trader Plan: {final_state['trader_investment_plan']}\n")
-    f.write(f"Market Report: {final_state['market_report']}\n")
-    f.write(f"News Report: {final_state['news_report']}\n")
-    f.write(f"Sentiment Report: {final_state['sentiment_report']}\n")
-    f.write(f"Fundamentals Report: {final_state['fundamentals_report']}\n")
-    f.write("=" * 50 + "\n\n")
+# with open("trading_report.txt", "a") as f:
+#     f.write(f"=== {final_state['company_of_interest']} - {final_state['trade_date']} ===\n")
+#     f.write(f"Final Decision: {decision}\n")
+#     f.write(f"Trader Plan: {final_state['trader_investment_plan']}\n")
+#     f.write(f"Market Report: {final_state['market_report']}\n")
+#     f.write(f"News Report: {final_state['news_report']}\n")
+#     f.write(f"Sentiment Report: {final_state['sentiment_report']}\n")
+#     f.write(f"Fundamentals Report: {final_state['fundamentals_report']}\n")
+#     f.write("=" * 50 + "\n\n")
