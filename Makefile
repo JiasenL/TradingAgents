@@ -1,5 +1,9 @@
-run:
-	@python -m cli.main
+SHELL      := /usr/bin/env zsh
+.SHELLFLAGS := -i -c
 
-conda:
-	conda activate tradingagents
+.PHONY: run shell
+
+# conda activate tradingagents
+run:
+	set -a && . $(CURDIR)/.env && set +a && \
+	python -m cli.main
